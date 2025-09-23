@@ -1,0 +1,11 @@
+# Requirements for Windows Certificate Collection Script
+# Install with: pip install -r requirements.txt
+
+# Windows certificate store access
+wincertstore>=0.2
+
+# Certificate parsing and cryptographic operations
+cryptography>=3.4.8
+
+# Optional: Enhanced logging and progress bars
+tqdm>=4.62.0
