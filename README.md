@@ -1,7 +1,7 @@
 # 🏢 Windows Certificate Collection Tool
 
 [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://python.org)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)](https://www.microsoft.com/windows)
 [![Enterprise](https://img.shields.io/badge/Use%20Case-Corporate%20Networks-orange.svg)](#corporate-networks)
 
@@ -44,20 +44,20 @@ This tool **automatically collects your Windows certificates** and provides them
 ## 🚀 **Quick Start**
 
 ### Option 1: **Standalone Executable (Recommended)**
-1. **Download** the latest `windows-cert-collector.exe` from [Releases](../../releases)
+1. **Download** the latest `corp-certs.exe` from [Releases](../../releases)
 2. **Run** the executable:
    ```bash
-   windows-cert-collector.exe --collect-only
+   corp-certs.exe --collect-only
    ```
 3. **Use** the generated certificates: `%USERPROFILE%\.certificates\ca-certificates-all.crt`
 
 ### Option 2: **Python Package**
 ```bash
 # Install with uv (recommended)
-uv add windows-cert-collector
+uv add corp-certs
 
 # Or with pip
-pip install windows-cert-collector
+pip install corp-certs
 
 # Run the tool
 collect-certs --collect-only
@@ -66,8 +66,8 @@ collect-certs --collect-only
 ### Option 3: **Development Setup**
 ```bash
 # Clone and setup
-git clone https://github.com/canmet-energy/windows-cert-collector.git
-cd windows-cert-collector
+git clone https://github.com/canmet-energy/corp-certs.git
+cd corp-certs
 uv venv
 uv sync
 
@@ -82,13 +82,13 @@ collect-certs --collect-only
 ### **Basic Certificate Collection**
 ```bash
 # Collect to default location
-windows-cert-collector.exe --collect-only
+corp-certs.exe --collect-only
 
 # Collect to custom directory  
-windows-cert-collector.exe --collect-only --output-dir "C:\my-certs"
+corp-certs.exe --collect-only --output-dir "C:\my-certs"
 
 # Get help
-windows-cert-collector.exe --help
+corp-certs.exe --help
 ```
 
 ### **Docker Integration**
@@ -135,10 +135,10 @@ The tool includes built-in Docker testing to validate certificate functionality:
 
 ```bash
 # Test certificates with Docker (requires Docker Desktop)
-windows-cert-collector.exe
+corp-certs.exe
 
 # Compare WITH vs WITHOUT corporate certificates
-windows-cert-collector.exe --docker-only
+corp-certs.exe --docker-only
 ```
 
 **Example Output:**

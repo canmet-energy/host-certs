@@ -11,7 +11,7 @@ def main():
     try:
         from .collector import WindowsCertificateCollector
     except ImportError:
-        from windows_cert_collector.collector import WindowsCertificateCollector
+        from corp_certs.collector import WindowsCertificateCollector
     
     import argparse
     
