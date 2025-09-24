@@ -11,7 +11,7 @@ def main():
     try:
         from .collector import WindowsCertificateCollector
     except ImportError:
-        from corp_certs.collector import WindowsCertificateCollector
+        from host_certs.collector import WindowsCertificateCollector
     
     import argparse
     
@@ -68,7 +68,7 @@ def main():
         print(f"\nCertificate collection completed successfully!")
         print(f"Output directory: {collector.output_dir}")
         print(f"Unique certificates: {len(certificates)}")
-        print(f"Combined bundle: ca-certificates-all.crt")
+        print(f"Combined bundle: host.crt")
         
         # If collect-only, stop here
         if args.collect_only:

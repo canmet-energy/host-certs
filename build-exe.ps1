@@ -79,21 +79,21 @@ function Build-Executable {
     
     $buildArgs = @(
         "--onefile",
-        "--name", "corp-certs",
+        "--name", "host-certs",
         "--paths=src", 
         "--version-file=version_info.txt",
         "--noconfirm",
-        "src/corp_certs/main.py"
+        "src/host_certs/main.py"
     )
     
     try {
         & ".venv\Scripts\python" -m PyInstaller @buildArgs
         
-        if (Test-Path "dist\corp-certs.exe") {
-            $fileInfo = Get-Item "dist\corp-certs.exe"
+        if (Test-Path "dist\host-certs.exe") {
+            $fileInfo = Get-Item "dist\host-certs.exe"
             $sizeMB = [math]::Round($fileInfo.Length / 1MB, 2)
             Write-Success "Build completed successfully!"
-            Write-Info "Executable: dist\corp-certs.exe"
+            Write-Info "Executable: dist\host-certs.exe"
             Write-Info "Size: $sizeMB MB"
         } else {
             Write-Error "Build failed - executable not found"
@@ -109,7 +109,7 @@ function Build-Executable {
 function Test-Executable {
     Write-Info "Testing the built executable..."
     
-    if (!(Test-Path "dist\corp-certs.exe")) {
+    if (!(Test-Path "dist\host-certs.exe")) {
         Write-Error "Executable not found. Build first."
         exit 1
     }
@@ -117,7 +117,7 @@ function Test-Executable {
     try {
         # Test help command
         Write-Info "Testing --help command..."
-        $helpOutput = & ".\dist\corp-certs.exe" --help 2>&1
+        $helpOutput = & ".\dist\host-certs.exe" --help 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Success "Help command works"
         } else {
@@ -129,11 +129,11 @@ function Test-Executable {
         # Test certificate collection to temp directory
         Write-Info "Testing certificate collection..."
         $testDir = "test-exe-output-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
-        $collectOutput = & ".\dist\corp-certs.exe" --collect-only --output-dir $testDir 2>&1
+        $collectOutput = & ".\dist\host-certs.exe" --collect-only --output-dir $testDir 2>&1
         
-        if ($LASTEXITCODE -eq 0 -and (Test-Path "$testDir\ca-certificates-all.crt")) {
+        if ($LASTEXITCODE -eq 0 -and (Test-Path "$testDir\host.crt")) {
             Write-Success "Certificate collection test passed"
-            $certCount = (Get-Content "$testDir\ca-certificates-all.crt" | Select-String "BEGIN CERTIFICATE").Count
+            $certCount = (Get-Content "$testDir\host.crt" | Select-String "BEGIN CERTIFICATE").Count
             Write-Info "Collected $certCount certificates"
             
             # Clean up test directory
@@ -166,10 +166,10 @@ try {
     Write-Success "Build process completed successfully!"
     Write-Info ""
     Write-Info "Ready for distribution:"
-    Write-Info "   Executable: .\dist\corp-certs.exe"
+    Write-Info "   Executable: .\dist\host-certs.exe"
     Write-Info "   Documentation: .\EXE_DISTRIBUTION_README.md" 
     Write-Info ""
-    Write-Info "Quick test: .\dist\corp-certs.exe --help"
+    Write-Info "Quick test: .\dist\host-certs.exe --help"
     
 } catch {
     Write-Error "Build script failed: $($_.Exception.Message)"

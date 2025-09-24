@@ -16,15 +16,15 @@ The issue was Node.js encountering `SELF_SIGNED_CERT_IN_CHAIN` errors due to cor
 ```bash
 collect-certs --collect-only
 ```
-This created: `%USERPROFILE%\.certificates\ca-certificates-all.crt`
+This created: `%USERPROFILE%\.certificates\host.crt`
 
 ### 2. **Configure Node.js to Trust Corporate Certificates**
 ```powershell
 # Set for current session
-$env:NODE_EXTRA_CA_CERTS = "$env:USERPROFILE\.certificates\ca-certificates-all.crt"
+$env:NODE_EXTRA_CA_CERTS = "$env:USERPROFILE\.certificates\host.crt"
 
 # Set permanently (already done)
-setx NODE_EXTRA_CA_CERTS "$env:USERPROFILE\.certificates\ca-certificates-all.crt"
+setx NODE_EXTRA_CA_CERTS "$env:USERPROFILE\.certificates\host.crt"
 ```
 
 ### 3. **Verification**

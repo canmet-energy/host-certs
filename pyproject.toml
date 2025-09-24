@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "corp-certs"
+name = "host-certs"
 version = "2.0.0"
 description = "A Windows certificate collection tool for Docker containers and enterprise environments"
 readme = "README.md"
@@ -48,17 +48,17 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/canmet-energy/corp-certs"
-Documentation = "https://github.com/canmet-energy/corp-certs#readme"
-Repository = "https://github.com/canmet-energy/corp-certs.git"
-"Bug Tracker" = "https://github.com/canmet-energy/corp-certs/issues"
+Homepage = "https://github.com/canmet-energy/host-certs"
+Documentation = "https://github.com/canmet-energy/host-certs#readme"
+Repository = "https://github.com/canmet-energy/host-certs.git"
+"Bug Tracker" = "https://github.com/canmet-energy/host-certs/issues"
 
 [project.scripts]
-collect-certs = "corp_certs.main:main"
-win-cert-collector = "corp_certs.main:main"
+collect-certs = "host_certs.main:main"
+win-cert-collector = "host_certs.main:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/corp_certs"]
+packages = ["src/host_certs"]
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -88,7 +88,7 @@ extend-exclude = '''
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
-addopts = "--cov=corp_certs --cov-report=term-missing"
+addopts = "--cov=host_certs --cov-report=term-missing"
 
 [tool.mypy]
 python_version = "3.8"

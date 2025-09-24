@@ -23,14 +23,14 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /usr/local/share/ca-certificates/
 
 # Copy the certificate bundle and test script
-COPY ca-certificates-all.crt /tmp/ca-certificates-all.crt
+COPY host.crt /tmp/host.crt
 COPY scripts/test-connectivity.sh /usr/local/bin/test-connectivity.sh
 
 # Use build arg to conditionally install corporate certificates
 ARG USE_CORPORATE_CERTS
 RUN if [ "$USE_CORPORATE_CERTS" = "true" ]; then \
         echo "Installing corporate certificates..."; \
-        cp /tmp/ca-certificates-all.crt /usr/local/share/ca-certificates/corporate-bundle.crt; \
+        cp /tmp/host.crt /usr/local/share/ca-certificates/corporate-bundle.crt; \
         update-ca-certificates; \
         echo "Corporate certificates installed."; \
     else \

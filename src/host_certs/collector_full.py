@@ -1,7 +1,13 @@
+#!/usr/bin/env python3
 """
-Windows Certificate Collector Module
+Windows Certificate Collection Script
+Collects certificates from Windows certificate stores for use in Linux containers
+Version: 2.0.0 (Python Implementation)
 
-Contains the main WindowsCertificateCollector class and related functionality.
+This script uses modern Python libraries to reduce complexity:
+- wincertstore: Direct Windows certificate store access
+- cryptography: Certificate parsing and validation
+- pathlib: Modern path handling
 """
 
 import os
@@ -54,7 +60,7 @@ class WindowsCertificateCollector:
         """Initialize the certificate collector
         
         Args:
-            output_dir: Output directory path. Defaults to %USERPROFILE%\\.certificates
+            output_dir: Output directory path. Defaults to %USERPROFILE%\.certificates
         """
         if output_dir:
             self.output_dir = Path(output_dir)
@@ -74,9 +80,6 @@ class WindowsCertificateCollector:
         
     def _setup_logging(self):
         """Setup logging configuration"""
-        # Create output directory first to ensure log file can be created
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-        
         logging.basicConfig(
             level=logging.INFO,
             format='%(asctime)s - %(levelname)s - %(message)s',
@@ -249,7 +252,7 @@ class WindowsCertificateCollector:
             
         # Save combined bundle
         all_certs = list(certificates.values())
-        self._save_certificate_bundle(all_certs, "ca-certificates-all.crt")
+        self._save_certificate_bundle(all_certs, "host.crt")
         
         # Create metadata file
         self._save_metadata(certificates)
@@ -320,7 +323,7 @@ class WindowsCertificateCollector:
             return False
             
         # Check if certificate bundle exists
-        cert_bundle = self.output_dir / "ca-certificates-all.crt"
+        cert_bundle = self.output_dir / "host.crt"
         if not cert_bundle.exists():
             self.logger.error("Certificate bundle not found. Run collect_certificates() first.")
             return False
@@ -371,7 +374,7 @@ class WindowsCertificateCollector:
         """
         try:
             script_dir = Path(__file__).parent
-            dockerfile_path = script_dir / "Dockerfile"
+            dockerfile_path = script_dir / "docker" / "Dockerfile"
             
             if not dockerfile_path.exists():
                 self.logger.error(f"Dockerfile not found at {dockerfile_path}")
@@ -382,17 +385,17 @@ class WindowsCertificateCollector:
             
             # Copy certificate bundle to script directory if building with certs
             if use_certs:
-                cert_bundle_path = self.output_dir / "ca-certificates-all.crt"
+                cert_bundle_path = self.output_dir / "host.crt"
                 if not cert_bundle_path.exists():
                     self.logger.error("Certificate bundle not found. Run certificate collection first.")
                     return False
                     
-                cert_dst = script_dir / "ca-certificates-all.crt"
+                cert_dst = script_dir / "host.crt"
                 shutil.copy2(cert_bundle_path, cert_dst)
                 self.logger.info("Copied certificate bundle to build context")
             else:
                 # Create empty certificate file for consistency
-                cert_dst = script_dir / "ca-certificates-all.crt"
+                cert_dst = script_dir / "host.crt"
                 cert_dst.touch()
             
             # Determine image tag based on cert usage
@@ -433,7 +436,7 @@ class WindowsCertificateCollector:
             return False
         finally:
             # Clean up copied certificate file
-            cert_dst = script_dir / "ca-certificates-all.crt"
+            cert_dst = script_dir / "host.crt"
             if cert_dst.exists():
                 cert_dst.unlink()
                 
@@ -529,7 +532,7 @@ class WindowsCertificateCollector:
             return False
             
         # Check if certificate bundle exists
-        cert_bundle = self.output_dir / "ca-certificates-all.crt"
+        cert_bundle = self.output_dir / "host.crt"
         if not cert_bundle.exists():
             self.logger.error("Certificate bundle not found. Run collect_certificates() first.")
             return False
@@ -958,7 +961,7 @@ fi
                     if with_success > without_success:
                         f.write("### ✅ Action Items\n\n")
                         f.write("1. **✓ Corporate certificates are essential for this environment**\n")
-                        f.write("2. **✓ Configure DevContainers to mount ca-certificates-all.crt**\n")
+                        f.write("2. **✓ Configure DevContainers to mount host.crt**\n")
                         f.write("3. **✓ Add certificate update commands to container startup scripts**\n")
                         f.write("4. **✓ Monitor certificate expiration dates regularly**\n")
                         f.write("5. **✓ Test connectivity after certificate updates**\n\n")
@@ -966,7 +969,7 @@ fi
                         f.write("```json\n")
                         f.write('{\n')
                         f.write('  "mounts": [\n')
-                        f.write('    "source=${env:USERPROFILE}/.certificates/ca-certificates-all.crt,target=/usr/local/share/ca-certificates/corporate.crt,type=bind,consistency=cached"\n')
+                        f.write('    "source=${env:USERPROFILE}/.certificates/host.crt,target=/usr/local/share/ca-certificates/corporate.crt,type=bind,consistency=cached"\n')
                         f.write('  ],\n')
                         f.write('  "postCreateCommand": "sudo update-ca-certificates"\n')
                         f.write('}\n')
@@ -987,3 +990,92 @@ fi
             
         except Exception as e:
             self.logger.error(f"Failed to generate comparison report: {e}")
+
+
+def main():
+    """Main entry point"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(
+        description="Windows Certificate Collection Script - Simplified"
+    )
+    parser.add_argument("--collect-only", action="store_true", 
+                       help="Only collect certificates (skip Docker tests)")
+    parser.add_argument("--docker-only", action="store_true",
+                       help="Only run Docker connectivity test (skip collection)")
+    parser.add_argument("--output-dir", type=str,
+                       help="Custom output directory (default: ~/.certificates)")
+    parser.add_argument("--analyze", action="store_true",
+                       help="Future: Run certificate dependency analysis")
+    
+    args = parser.parse_args()
+    
+    print("Windows Certificate Collection Script (Python)")
+    print("=" * 50)
+    
+    try:
+        # Initialize collector
+        collector = WindowsCertificateCollector(args.output_dir)
+        
+        # Handle docker-only mode
+        if args.docker_only:
+            print(f"\nRunning Docker connectivity tests...")
+            print("=" * 40)
+            print("This will test connectivity both WITH and WITHOUT corporate certificates")
+            
+            if collector.run_comparison_test():
+                print("SUCCESS: Docker certificate tests completed!")
+                print("Check the comparison report for detailed analysis.")
+            else:
+                print("ERROR: Docker certificate tests failed!")
+                return 1
+            return 0
+        
+        # Collect certificates (unless docker-only)
+        print("Collecting certificates from Windows certificate stores...")
+        certificates = collector.collect_certificates()
+        
+        if not certificates:
+            print("WARNING: No certificates found!")
+            print("This may indicate:")
+            print("  - No certificates in Windows certificate stores")  
+            print("  - Insufficient permissions to read certificate stores")
+            print("  - Try running as Administrator for system certificates")
+            return 1
+            
+        # Save certificates
+        collector.save_certificates(certificates)
+        
+        print(f"\nCertificate collection completed successfully!")
+        print(f"Output directory: {collector.output_dir}")
+        print(f"Unique certificates: {len(certificates)}")
+        print(f"Combined bundle: host.crt")
+        
+        # If collect-only, stop here
+        if args.collect_only:
+            return 0
+            
+        # Default behavior: run comparison tests
+        print(f"\nRunning certificate comparison tests...")
+        print("=" * 45)
+        print("This will test connectivity both WITH and WITHOUT corporate certificates")
+        
+        if collector.run_comparison_test():
+            print("SUCCESS: Certificate comparison tests completed!")
+            print("Check the comparison report for detailed analysis.")
+        else:
+            print("ERROR: Certificate comparison tests failed!")
+            return 1
+        
+        return 0
+        
+    except KeyboardInterrupt:
+        print("\nOperation cancelled by user")
+        return 1
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

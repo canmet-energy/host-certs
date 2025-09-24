@@ -44,20 +44,20 @@ This tool **automatically collects your Windows certificates** and provides them
 ## 🚀 **Quick Start**
 
 ### Option 1: **Standalone Executable (Recommended)**
-1. **Download** the latest `corp-certs.exe` from [Releases](../../releases)
+1. **Download** the latest `host-certs.exe` from [Releases](../../releases)
 2. **Run** the executable:
    ```bash
-   corp-certs.exe --collect-only
+   host-certs.exe --collect-only
    ```
-3. **Use** the generated certificates: `%USERPROFILE%\.certificates\ca-certificates-all.crt`
+3. **Use** the generated certificates: `%USERPROFILE%\.certificates\host.crt`
 
 ### Option 2: **Python Package**
 ```bash
 # Install with uv (recommended)
-uv add corp-certs
+uv add host-certs
 
 # Or with pip
-pip install corp-certs
+pip install host-certs
 
 # Run the tool
 collect-certs --collect-only
@@ -66,8 +66,8 @@ collect-certs --collect-only
 ### Option 3: **Development Setup**
 ```bash
 # Clone and setup
-git clone https://github.com/canmet-energy/corp-certs.git
-cd corp-certs
+git clone https://github.com/canmet-energy/host-certs.git
+cd host-certs
 uv venv
 uv sync
 
@@ -82,13 +82,13 @@ collect-certs --collect-only
 ### **Basic Certificate Collection**
 ```bash
 # Collect to default location
-corp-certs.exe --collect-only
+host-certs.exe --collect-only
 
 # Collect to custom directory  
-corp-certs.exe --collect-only --output-dir "C:\my-certs"
+host-certs.exe --collect-only --output-dir "C:\my-certs"
 
 # Get help
-corp-certs.exe --help
+host-certs.exe --help
 ```
 
 ### **Docker Integration**
@@ -96,22 +96,22 @@ corp-certs.exe --help
 # DevContainer configuration (.devcontainer/devcontainer.json)
 {
   "mounts": [
-    "source=${env:USERPROFILE}/.certificates/ca-certificates-all.crt,target=/usr/local/share/ca-certificates/corporate.crt,type=bind,consistency=cached"
+    "source=${env:USERPROFILE}/.certificates/host.crt,target=/usr/local/share/ca-certificates/corporate.crt,type=bind,consistency=cached"
   ],
   "postCreateCommand": "sudo update-ca-certificates"
 }
 
 # Docker run example
-docker run -v "%USERPROFILE%\.certificates\ca-certificates-all.crt:/usr/local/share/ca-certificates/corporate.crt:ro" ubuntu:22.04
+docker run -v "%USERPROFILE%\.certificates\host.crt:/usr/local/share/ca-certificates/corporate.crt:ro" ubuntu:22.04
 ```
 
 ### **Fix Development Tools**
 ```powershell
 # Automatic Node.js fix (Claude CLI, npm, etc.)
-$env:NODE_EXTRA_CA_CERTS = "$env:USERPROFILE\.certificates\ca-certificates-all.crt"
+$env:NODE_EXTRA_CA_CERTS = "$env:USERPROFILE\.certificates\host.crt"
 
 # Make permanent
-setx NODE_EXTRA_CA_CERTS "$env:USERPROFILE\.certificates\ca-certificates-all.crt"
+setx NODE_EXTRA_CA_CERTS "$env:USERPROFILE\.certificates\host.crt"
 ```
 
 ---
@@ -120,7 +120,7 @@ setx NODE_EXTRA_CA_CERTS "$env:USERPROFILE\.certificates\ca-certificates-all.crt
 
 ```
 📂 ~/.certificates/
-├── 📄 ca-certificates-all.crt          # 🎯 Main file - use this for containers
+├── 📄 host.crt          # 🎯 Main file - use this for containers
 ├── 📄 ca-certificates-user-root.crt    # Root certificates only
 ├── 📄 ca-certificates-user-ca.crt      # Intermediate certificates only
 ├── 📄 certificate_metadata.txt         # Detailed certificate information
@@ -135,10 +135,10 @@ The tool includes built-in Docker testing to validate certificate functionality:
 
 ```bash
 # Test certificates with Docker (requires Docker Desktop)
-corp-certs.exe
+host-certs.exe
 
 # Compare WITH vs WITHOUT corporate certificates
-corp-certs.exe --docker-only
+host-certs.exe --docker-only
 ```
 
 **Example Output:**
@@ -308,7 +308,7 @@ python collect_certs.py --docker-only
 ## 📊 Output Files
 
 ### Certificates (in `%USERPROFILE%\.certificates\`)
-- `ca-certificates-all.crt` - Combined certificate bundle
+- `host.crt` - Combined certificate bundle
 - `ca-certificates-user-root.crt` - Root certificates only
 - `ca-certificates-user-ca.crt` - Intermediate certificates only
 
@@ -355,7 +355,7 @@ Tests connectivity to:
 Certificate collection completed successfully!
 Output directory: C:\Users\username\.certificates
 Unique certificates: 82
-Combined bundle: ca-certificates-all.crt
+Combined bundle: host.crt
 
 Running certificate comparison tests...
 SUCCESS: Certificate comparison tests completed!

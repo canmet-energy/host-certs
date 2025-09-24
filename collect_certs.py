@@ -252,7 +252,7 @@ class WindowsCertificateCollector:
             
         # Save combined bundle
         all_certs = list(certificates.values())
-        self._save_certificate_bundle(all_certs, "ca-certificates-all.crt")
+        self._save_certificate_bundle(all_certs, "host.crt")
         
         # Create metadata file
         self._save_metadata(certificates)
@@ -323,7 +323,7 @@ class WindowsCertificateCollector:
             return False
             
         # Check if certificate bundle exists
-        cert_bundle = self.output_dir / "ca-certificates-all.crt"
+        cert_bundle = self.output_dir / "host.crt"
         if not cert_bundle.exists():
             self.logger.error("Certificate bundle not found. Run collect_certificates() first.")
             return False
@@ -385,17 +385,17 @@ class WindowsCertificateCollector:
             
             # Copy certificate bundle to script directory if building with certs
             if use_certs:
-                cert_bundle_path = self.output_dir / "ca-certificates-all.crt"
+                cert_bundle_path = self.output_dir / "host.crt"
                 if not cert_bundle_path.exists():
                     self.logger.error("Certificate bundle not found. Run certificate collection first.")
                     return False
                     
-                cert_dst = script_dir / "ca-certificates-all.crt"
+                cert_dst = script_dir / "host.crt"
                 shutil.copy2(cert_bundle_path, cert_dst)
                 self.logger.info("Copied certificate bundle to build context")
             else:
                 # Create empty certificate file for consistency
-                cert_dst = script_dir / "ca-certificates-all.crt"
+                cert_dst = script_dir / "host.crt"
                 cert_dst.touch()
             
             # Determine image tag based on cert usage
@@ -436,7 +436,7 @@ class WindowsCertificateCollector:
             return False
         finally:
             # Clean up copied certificate file
-            cert_dst = script_dir / "ca-certificates-all.crt"
+            cert_dst = script_dir / "host.crt"
             if cert_dst.exists():
                 cert_dst.unlink()
                 
@@ -532,7 +532,7 @@ class WindowsCertificateCollector:
             return False
             
         # Check if certificate bundle exists
-        cert_bundle = self.output_dir / "ca-certificates-all.crt"
+        cert_bundle = self.output_dir / "host.crt"
         if not cert_bundle.exists():
             self.logger.error("Certificate bundle not found. Run collect_certificates() first.")
             return False
@@ -961,7 +961,7 @@ fi
                     if with_success > without_success:
                         f.write("### ✅ Action Items\n\n")
                         f.write("1. **✓ Corporate certificates are essential for this environment**\n")
-                        f.write("2. **✓ Configure DevContainers to mount ca-certificates-all.crt**\n")
+                        f.write("2. **✓ Configure DevContainers to mount host.crt**\n")
                         f.write("3. **✓ Add certificate update commands to container startup scripts**\n")
                         f.write("4. **✓ Monitor certificate expiration dates regularly**\n")
                         f.write("5. **✓ Test connectivity after certificate updates**\n\n")
@@ -969,7 +969,7 @@ fi
                         f.write("```json\n")
                         f.write('{\n')
                         f.write('  "mounts": [\n')
-                        f.write('    "source=${env:USERPROFILE}/.certificates/ca-certificates-all.crt,target=/usr/local/share/ca-certificates/corporate.crt,type=bind,consistency=cached"\n')
+                        f.write('    "source=${env:USERPROFILE}/.certificates/host.crt,target=/usr/local/share/ca-certificates/corporate.crt,type=bind,consistency=cached"\n')
                         f.write('  ],\n')
                         f.write('  "postCreateCommand": "sudo update-ca-certificates"\n')
                         f.write('}\n')
@@ -1049,7 +1049,7 @@ def main():
         print(f"\nCertificate collection completed successfully!")
         print(f"Output directory: {collector.output_dir}")
         print(f"Unique certificates: {len(certificates)}")
-        print(f"Combined bundle: ca-certificates-all.crt")
+        print(f"Combined bundle: host.crt")
         
         # If collect-only, stop here
         if args.collect_only:

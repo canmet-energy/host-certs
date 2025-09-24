@@ -50,7 +50,7 @@ The tool creates several certificate files:
 
 ```
 📂 Output Directory
-├── 📄 ca-certificates-all.crt          # Combined bundle (use this for containers)
+├── 📄 host.crt          # Combined bundle (use this for containers)
 ├── 📄 ca-certificates-user-root.crt    # Root certificates only
 ├── 📄 ca-certificates-user-ca.crt      # Intermediate certificates only  
 ├── 📄 certificate_metadata.txt         # Detailed certificate information
@@ -65,7 +65,7 @@ The tool creates several certificate files:
 ```json
 {
   "mounts": [
-    "source=${env:USERPROFILE}/.certificates/ca-certificates-all.crt,target=/usr/local/share/ca-certificates/corporate.crt,type=bind,consistency=cached"
+    "source=${env:USERPROFILE}/.certificates/host.crt,target=/usr/local/share/ca-certificates/corporate.crt,type=bind,consistency=cached"
   ],
   "postCreateCommand": "sudo update-ca-certificates"
 }
@@ -73,7 +73,7 @@ The tool creates several certificate files:
 
 ### **Docker Run Example**
 ```bash
-docker run -v "%USERPROFILE%\.certificates\ca-certificates-all.crt:/usr/local/share/ca-certificates/corporate.crt:ro" ubuntu:22.04
+docker run -v "%USERPROFILE%\.certificates\host.crt:/usr/local/share/ca-certificates/corporate.crt:ro" ubuntu:22.04
 ```
 
 ---
@@ -85,7 +85,7 @@ This tool also fixes common corporate network issues:
 ### **Node.js Applications (including Claude CLI)**
 ```powershell
 # The tool automatically sets this environment variable:
-$env:NODE_EXTRA_CA_CERTS = "$env:USERPROFILE\.certificates\ca-certificates-all.crt"
+$env:NODE_EXTRA_CA_CERTS = "$env:USERPROFILE\.certificates\host.crt"
 ```
 
 ### **Applications Fixed:**
@@ -113,7 +113,7 @@ Collecting certificates from Windows certificate stores...
 Certificate collection completed successfully!
 Output directory: C:\Users\user\.certificates
 Unique certificates: 82
-Combined bundle: ca-certificates-all.crt
+Combined bundle: host.crt
 ```
 
 ---
