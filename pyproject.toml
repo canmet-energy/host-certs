@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "host-certs"
-version = "2.0.0"
+version = "2.1.0"
 description = "A Windows certificate collection tool for Docker containers and enterprise environments"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
