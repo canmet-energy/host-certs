@@ -29,6 +29,17 @@ except ImportError:
     sys.exit(1)
 
 
+def get_resource_path(relative_path: str) -> Path:
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        # Running in development mode
+        base_path = Path(__file__).parent
+    return Path(base_path) / relative_path
+
+
 @dataclass
 class CertificateInfo:
     """Information about a certificate"""
@@ -370,8 +381,8 @@ class WindowsCertificateCollector:
             True if build successful, False otherwise
         """
         try:
-            script_dir = Path(__file__).parent
-            dockerfile_path = script_dir / "Dockerfile"
+            script_dir = get_resource_path("host_certs")
+            dockerfile_path = script_dir / "docker" / "Dockerfile"
             
             if not dockerfile_path.exists():
                 self.logger.error(f"Dockerfile not found at {dockerfile_path}")

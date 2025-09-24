@@ -82,6 +82,8 @@ function Build-Executable {
         "--name", "host-certs",
         "--paths=src", 
         "--version-file=version_info.txt",
+        "--add-data=src/host_certs/docker;host_certs/docker",
+        "--add-data=src/host_certs/scripts;host_certs/scripts",
         "--noconfirm",
         "src/host_certs/main.py"
     )
